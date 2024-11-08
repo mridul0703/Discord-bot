@@ -1,5 +1,5 @@
 // Import packages
-const { Client, GatewayIntentBits, SlashCommandBuilder } = require('discord.js');
+const { Client, GatewayIntentBits, SlashCommandBuilder, ActivityType } = require('discord.js');
 const cron = require('node-cron');
 const fs = require('fs');
 require('dotenv').config(); // Load environment variables from .env
@@ -14,6 +14,26 @@ const client = new Client({
     ]
 });
 
+
+let status = [
+    {
+      name: 'Phasmophobia',
+      type: ActivityType.Playing,
+    },
+    {
+        name: 'Phasmo Verse',
+        type: ActivityType.Streaming,
+        url: 'https://www.youtube.com/live/Hpv9u87fI3w?si=jQ2mGpE2GfUeZFe1',
+    },
+    {
+      name: 'Under Maintenance',
+      type: ActivityType.Custom,
+    },
+    {
+        name: 'Developed by - not_mridul',
+        type: ActivityType.Custom,
+      },
+  ];
 // Load bot token from environment variables
 const token = process.env.TOKEN;
 
@@ -64,7 +84,10 @@ function storeWinner(winnerId) {
 
 // Bot ready event
 client.once('ready', () => {
-    console.log(`Logged in as ${client.user.tag}!`);
+    setInterval(() => {
+        let random = Math.floor(Math.random() * status.length);
+        client.user.setActivity(status[random]);
+      }, 10000);
     startGiveaway(); // Start the giveaway process (cron job)
 });
 

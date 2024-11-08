@@ -43,21 +43,23 @@ client.on('ready', async () => {
     await client.application.commands.set(commands);
 });
 
-// Slash command interactions
 client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
 
     const { commandName, channel } = interaction;
 
     if (commandName === 'pstart') {
+        // Defer the reply to give time for processing
+        await interaction.deferReply({ ephemeral: true });
+
         giveawayMessageId = await sendGiveawayReminder(channel); // Send reminder and store message ID
-        await interaction.reply({ content: 'Giveaway started! React to the giveaway message to participate.', ephemeral: true });
+        await interaction.editReply({ content: 'Giveaway started! React to the giveaway message to participate.' });
     } else if (commandName === 'pend') {
         const giveawayMessage = await channel.send('The giveaway is now closed! No further participants can join.');
         await giveawayMessage.react('🔒'); // Add a lock emoji to signify closure
         await interaction.reply({ content: 'Giveaway is now closed and no more participants can join.', ephemeral: true });
     } else if (commandName === 'pwinner') {
-        const participants = JSON.parse(fs.readFileSync('./participants.json', 'utf8'));
+        const participants = JSON.parse(fs.readFileSync('./data/participants.json', 'utf8')); // Updated path
         const participantIds = Object.keys(participants);
         
         if (participantIds.length === 0) {
@@ -91,6 +93,7 @@ client.on('interactionCreate', async interaction => {
         await interaction.reply({ content: 'Winner has been announced!', ephemeral: true });
     }
 });
+
 
 // Message reaction event to track participants
 client.on('messageReactionAdd', async (reaction, user) => {

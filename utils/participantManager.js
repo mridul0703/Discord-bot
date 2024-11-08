@@ -1,31 +1,23 @@
-// utils/participantManager.js
 const fs = require('fs');
-
-const participantFilePath = './participants.json';
-const winnerFilePath = './winners.json';
-
-// Ensure the participants and winners files exist
-if (!fs.existsSync(participantFilePath)) fs.writeFileSync(participantFilePath, JSON.stringify({}));
-if (!fs.existsSync(winnerFilePath)) fs.writeFileSync(winnerFilePath, JSON.stringify([]));
+const participantsFilePath = './data/participants.json';
+const winnersFilePath = './data/winners.json';
 
 function addParticipant(userId) {
-    const participants = JSON.parse(fs.readFileSync(participantFilePath, 'utf8'));
-    if (!participants[userId]) {
-        participants[userId] = true;
-        fs.writeFileSync(participantFilePath, JSON.stringify(participants, null, 2));
-    }
+    const participants = JSON.parse(fs.readFileSync(participantsFilePath, 'utf8'));
+    participants[userId] = true;
+    fs.writeFileSync(participantsFilePath, JSON.stringify(participants));
 }
 
 function removeParticipant(userId) {
-    const participants = JSON.parse(fs.readFileSync(participantFilePath, 'utf8'));
+    const participants = JSON.parse(fs.readFileSync(participantsFilePath, 'utf8'));
     delete participants[userId];
-    fs.writeFileSync(participantFilePath, JSON.stringify(participants, null, 2));
+    fs.writeFileSync(participantsFilePath, JSON.stringify(participants));
 }
 
-function storeWinner(winnerId) {
-    const winners = JSON.parse(fs.readFileSync(winnerFilePath, 'utf8'));
-    winners.push(winnerId);
-    fs.writeFileSync(winnerFilePath, JSON.stringify(winners, null, 2));
+function storeWinner(userId) {
+    const winners = JSON.parse(fs.readFileSync(winnersFilePath, 'utf8'));
+    winners.push(userId);
+    fs.writeFileSync(winnersFilePath, JSON.stringify(winners));
 }
 
 module.exports = { addParticipant, removeParticipant, storeWinner };
